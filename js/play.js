@@ -49,10 +49,17 @@ var countdownText;
 var howToPlayButton;
 var explanationWindow;
 var closeButton;
+var recid;
+var recidIsGet = false;
 
 // Here we use the 'official name' (playState) when defining the state
 var playState = {
 	create: function() {
+		if (!recidIsGet) {
+			getUserData();
+			recidIsGet = true;
+		}
+
 		// main
 		gameBackground = game.add.sprite(0, 0, 'fontCoverBackground');
 		gameBackground.scale.setTo(game.world.width / gameBackground.width, 
@@ -224,7 +231,7 @@ var playState = {
 				countdownTimer = gameTimer.add(Phaser.Timer.SECOND * 
 				levelSetting[currentLevel].timeLimits, loseDisplay, this);	
 				gameTimer.start();
-			});
+			}, this);
 		prepareTimer.start();
 	},
 
@@ -247,7 +254,6 @@ var playState = {
 			game.debug.rectangle(rectangleOfBox[3], '#ff0000', false);
 	}*/
 };
-
 
 function onDragStart(sprite, pointer) {
 	var box;
@@ -660,6 +666,8 @@ function submitAnswerOnClick() {
 	howToPlayButton.input.enabled = false;
 
 	if (isAllCorrect()) {
+		postData(recid, currentLevel + 1, currentScore + 10, 
+			Math.round(gameTimer.ms / 1000), 100);
 		gameTimer.stop();
 		if (currentLevel < 9) {	// pass
 			var passBackground = game.add.sprite(game.world.width * 0.6125, 
